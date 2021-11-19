@@ -34,13 +34,15 @@ void loop() {
   //once man detected and within distance to pick up
 //  robot.pick_up();
 //  robot.id_dummy();
-//  //take man to box position
-//  //locate next man with camera
-//  //go to man position
+//  //take man to box position: driver.stop(); Serial.write("robot coordinates"); locate robot; Serial.write("box [boxname] coordinates"); locate box; get path from robot to box; move along that path
+//  for (int i=0; i<2; i++){
+//  //locate next man with camera: driver.stop(); Serial.write("robot coordinates"); Serial.write("dummy coordinates"); locate robot; locate man; get path from robot to man; move along that path
 //  if(getDistance() <= 5){
 //    driver.stop();
 //    robot.pick_up();
 //  }
 //  robot.id_dummy();
-  //take man to box position
+  //take man to box position:  driver.stop(); locate robot; locate box; get path from robot to box
+//}
+
 }

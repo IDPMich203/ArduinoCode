@@ -9,6 +9,15 @@ class Robot{
   public:
     void line_following(Driver driver);
     void pick_up();
-    void id_dummy();
+    void id_dummy(){
+      //read infrared pattern;
+      //if (pattern 1){
+      //box = blue;}
+      //else if (pattern 2){
+      // box = red;}
+      //else if (pattern 3){
+      // box = white;}
+      
+    }
 };
 #endif
