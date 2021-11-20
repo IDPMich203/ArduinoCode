@@ -2,33 +2,55 @@
 #define DRIVER_H
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
+#include <Servo.h>
 
 #define abs(x) ((x)>0?(x):-(x))
-#define LEFT_MOTOR 1
-#define RIGHT_MOTOR 2
+
 
 class Driver{
   public:
   Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
   Adafruit_DCMotor leftMotor;
   Adafruit_DCMotor rightMotor;
-//  public Driver(){
-//    
-//  }
+
+  Servo gripperServo;
+  Servo rearServo;
+
   int leftSpeed = 0;
   int rightSpeed = 0;
-  void Init(){
+  Driver(int leftPin, int rightPin){
       AFMS.begin();
-      leftMotor = *AFMS.getMotor(LEFT_MOTOR);
-      rightMotor = *AFMS.getMotor(RIGHT_MOTOR);
-      leftMotor.setSpeed(255);
-      rightMotor.setSpeed(255);
+      leftMotor = *AFMS.getMotor(leftPin);
+      rightMotor = *AFMS.getMotor(rightPin);
+      leftMotor.setSpeed(leftSpeed);
+      rightMotor.setSpeed(rightSpeed);
+
+      gripperServo.attach(9);
+      rearServo.attach(10);
   }
-  void turn(float angle){
-    
+  void raise(){
+    for (int i=0; i<180; i++) {
+    rearServo.write(i);
+    delay(30);
+ }
   }
-  void fwd(float distance){
-    
+  void open_gripper(){
+    for (int i=0; i<180; i++) {
+    gripperServo.write(i);
+    delay(30);
+  }
+  }
+  void close_gripper(){
+    for (int i=180; i>0; i--) {
+    gripperServo.write(i);
+    delay(30);
+  }
+  }
+  void lower(){
+    for (int i=180; i>0; i--) {
+    rearServo.write(i);
+    delay(30);
+  }
   }
   void setSpeed(int speed){
     leftMotor.setSpeed(speed);
@@ -36,6 +58,7 @@ class Driver{
     rightMotor.setSpeed(speed);
     rightSpeed = speed;
   }
+
   void start_turn(float turnspeed){
     setSpeed((int) abs(turnspeed) * 255.0);
     if(turnspeed < 0){
