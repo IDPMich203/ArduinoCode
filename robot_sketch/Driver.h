@@ -31,13 +31,14 @@ class Driver{
     
   }
   void setSpeed(int speed){
+    Serial.println(speed);
     leftMotor.setSpeed(speed);
     leftSpeed = speed;
     rightMotor.setSpeed(speed);
     rightSpeed = speed;
   }
   void start_turn(float turnspeed){
-    setSpeed((int) abs(turnspeed) * 255.0);
+    setSpeed((int) (abs(turnspeed) * 255.0));
     if(turnspeed < 0){
 
       rightMotor.run(FORWARD);
@@ -49,7 +50,7 @@ class Driver{
     }
   }
   void start_move(float movespeed){
-    setSpeed((int) abs(movespeed) * 255.0);
+    setSpeed((int) (abs(movespeed) * 255.0) );
     if(movespeed < 0){
 
       rightMotor.run(BACKWARD);

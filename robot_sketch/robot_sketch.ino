@@ -9,8 +9,8 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor1 = AFMS.getMotor(1);
 Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
 Robot robot;
-#define echoPin 2 // attach pin D2 Arduino to pin Echo of HC-SR04
-#define trigPin 3 //attach pin D3 Arduino to pin Trig of HC-SR04
+#define echoPin 3 // attach pin D2 Arduino to pin Echo of HC-SR04
+#define trigPin 2 //attach pin D3 Arduino to pin Trig of HC-SR04
 
 Driver driver;
 void setup() {
@@ -27,9 +27,12 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  while(getDistance() > 5){
-    robot.line_following(driver);
-  }
+   while(getDistance() > 5){
+     robot.line_following(driver);
+     delay(10);
+   }
+
+//  Serial.println(getDistance());
   driver.stop();
   //once man detected and within distance to pick up
 //  robot.pick_up();

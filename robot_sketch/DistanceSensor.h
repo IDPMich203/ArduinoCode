@@ -6,9 +6,9 @@
 long duration; // variable for the duration of sound wave travel
 float distance; // variable for the distance measurement
 uint8_t echoPin, trigPin;
-void setupSensor(uint8_t echoPin, uint8_t trigPin) {
-  echoPin = echoPin;
-  trigPin = trigPin;
+void setupSensor(uint8_t eP, uint8_t tP) {
+  echoPin = eP;
+  trigPin = tP;
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an OUTPUT
   pinMode(echoPin, INPUT); // Sets the echoPin as an INPUT
 }
