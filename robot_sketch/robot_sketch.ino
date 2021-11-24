@@ -55,36 +55,49 @@ bool blink(){
 }
 
 void loop() {
+
+//Loop has already run.
 if(ran){
   return;
 }
 
+//Wait for button press
 while(!running){
   running = digitalRead(BUTTON);
 }
 
+//Set up blink task
 auto task = timer.every(500, blink);
+
+//Follow line before ramp, keep an eye out for inclination change (does not work)
 while(beforeramp){
+  //Update blink timer.
   timer.tick();
   delay(10);
   robot.line_following(driver);
   if (IMU.accelerationAvailable()) {
     IMU.readAcceleration(x, y, z);
   }
+  
   if(z < 1.0){ //Check this
     beforeramp = false;
   }
 }
 
+//After ramp, check if dummy is around.
 while(getDistance() > 5){
+     //Update blink timer
      timer.tick();
      robot.line_following(driver);
      delay(10);
 }
 
+//No longer moving
   driver.stop();
   timer.cancel(task);
 
+
+  //Detect dummy and turn on corresponding LED.
   int dummy_no = detectDummy();
   if(dummy_no == 0){
     Serial.println(":(");
@@ -96,6 +109,8 @@ while(getDistance() > 5){
   }else if(dummy_no == 3){
     digitalWrite(GREEN_PIN, HIGH);
   }
+
+  //Ensure we do not run again.
   ran = true;
 
 }
