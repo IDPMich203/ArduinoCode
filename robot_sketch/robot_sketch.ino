@@ -1,51 +1,101 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
+#include <Arduino_LSM6DS3.h>
+#include <arduino-timer.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 #include "header.h"
 #include "Driver.h"
 #include "DistanceSensor.h"
-Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
-//motor 1 should be on the left, motor 2 on the right
-Adafruit_DCMotor *motor1 = AFMS.getMotor(1);
-Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
+#include "Dummy.h"
+
 Robot robot;
 #define echoPin 3 // attach pin D2 Arduino to pin Echo of HC-SR04
 #define trigPin 2 //attach pin D3 Arduino to pin Trig of HC-SR04
 
+#define AMBER_PIN A2
+#define RED_PIN A1
+#define GREEN_PIN A0
+
+#define BUTTON 7
+Timer<1> timer;
+
 Driver driver;
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(NINA_RESETN, OUTPUT);         
-  digitalWrite(NINA_RESETN, LOW);
+  pinMode(BUTTON, INPUT);
+  pinMode(AMBER_PIN, OUTPUT);
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  digitalWrite(AMBER_PIN, LOW);
+  digitalWrite(RED_PIN, LOW);
+  digitalWrite(GREEN_PIN, LOW);
+  
   driver = Driver();
   driver.Init();
   setupSensor(echoPin, trigPin);
   Serial.begin(9600);
-  SerialNina.begin(115200);
-  AFMS.begin();
+
+  if (!IMU.begin()) {
+    Serial.println("Failed to initialize IMU!");
+
+    while (1);
+  }
+
+}
+
+float x,y,z;
+bool ran = false;
+bool beforeramp = true;
+bool running = false;
+
+bool amberstate = true;
+bool blink(){
+  digitalWrite(AMBER_PIN, amberstate ? HIGH : LOW);
+  amberstate = !amberstate;
+  return true;
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-   while(getDistance() > 5){
+if(ran){
+  return;
+}
+
+while(!running){
+  running = digitalRead(BUTTON);
+}
+
+auto task = timer.every(500, blink);
+while(beforeramp){
+  timer.tick();
+  delay(10);
+  robot.line_following(driver);
+  if (IMU.accelerationAvailable()) {
+    IMU.readAcceleration(x, y, z);
+  }
+  if(z < 1.0){ //Check this
+    beforeramp = false;
+  }
+}
+
+while(getDistance() > 5){
+     timer.tick();
      robot.line_following(driver);
      delay(10);
-   }
+}
 
-//  Serial.println(getDistance());
   driver.stop();
-  //once man detected and within distance to pick up
-//  robot.pick_up();
-//  robot.id_dummy();
-//  //take man to box position: driver.stop(); Serial.write("robot coordinates"); locate robot; Serial.write("box [boxname] coordinates"); locate box; get path from robot to box; move along that path
-//  for (int i=0; i<2; i++){
-//  //locate next man with camera: driver.stop(); Serial.write("robot coordinates"); Serial.write("dummy coordinates"); locate robot; locate man; get path from robot to man; move along that path
-//  if(getDistance() <= 5){
-//    driver.stop();
-//    robot.pick_up();
-//  }
-//  robot.id_dummy();
-  //take man to box position:  driver.stop(); locate robot; locate box; get path from robot to box
-//}
+  timer.cancel(task);
+
+  int dummy_no = detectDummy();
+  if(dummy_no == 0){
+    Serial.println(":(");
+  }else if(dummy_no == 1){
+    digitalWrite(GREEN_PIN, HIGH);
+    digitalWrite(RED_PIN, HIGH);
+  }else if(dummy_no == 2){
+    digitalWrite(RED_PIN, HIGH);
+  }else if(dummy_no == 3){
+    digitalWrite(GREEN_PIN, HIGH);
+  }
+  ran = true;
 
 }

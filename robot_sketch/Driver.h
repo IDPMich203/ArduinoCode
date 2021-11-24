@@ -31,7 +31,7 @@ class Driver{
     
   }
   void setSpeed(int speed){
-    Serial.println(speed);
+//    Serial.println(speed);
     leftMotor.setSpeed(speed);
     leftSpeed = speed;
     rightMotor.setSpeed(speed);

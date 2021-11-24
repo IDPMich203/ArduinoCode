@@ -16,8 +16,7 @@ void Robot::line_following(Driver driver){
     else if(right){
       // driver.add_turn(0.2);
       driver.leftMotor.setSpeed(255);
-      driver.rightMotor.setSpeed(125
-      );
+      driver.rightMotor.setSpeed(125);
       }
     else if(left){
       // driver.add_turn(-0.2);
