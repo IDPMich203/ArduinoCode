@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <Servo.h>
-
+#include "DelayAsync.h"
 #define abs(x) ((x)>0?(x):-(x))
 
 #define SERVO_MIN 25
@@ -41,7 +41,7 @@ class Driver{
   void raise_back(){
     for (int i=ARM_UP; i<ARM_DOWN; i++) {
     rearServo.write(i);
-    delay(30);
+    delayAsync(30);
  }
   }
   void open_gripper(bool fast=false){
@@ -51,7 +51,7 @@ class Driver{
     }
     for (int i=GRIPPER_CLOSED; i<GRIPPER_OPEN; i++) {
     gripperServo.write(i);
-    delay(10);
+    delayAsync(10);
   }
   }
   void close_gripper(bool fast=false){
@@ -61,7 +61,7 @@ class Driver{
     }
     for (int i=180; i>0; i--) {
     gripperServo.write(i);
-    delay(30);
+    delayAsync(30);
   }
   }
   void lower_back(bool fast = false){
@@ -71,7 +71,7 @@ class Driver{
     }
     for (int i=ARM_DOWN; i>ARM_UP; i--) {
     rearServo.write(i);
-    delay(30);
+    delayAsync(30);
   }
   }
   void setSpeed(int speed){
@@ -122,6 +122,22 @@ class Driver{
   void stop(){
     leftMotor.run(RELEASE);
     rightMotor.run(RELEASE);
+  }
+
+  void pick_up(){
+    open_gripper(true);
+    raise_back();
+    close_gripper();
+    lower_back();
+  }
+  void drop(){
+    raise_back();
+    open_gripper();
+    lower_back();
+  }
+
+  void roll(){
+    //I had to put this in
   }
 };
 

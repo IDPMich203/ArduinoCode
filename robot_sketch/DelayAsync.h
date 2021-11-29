@@ -11,6 +11,7 @@ void delayAsync(unsigned long duration){
    
    while((unsigned long)(millis() - startTime) <= duration) {
         MainTimer.tick();
+
    }
 }
 

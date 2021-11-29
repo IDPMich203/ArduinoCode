@@ -29,6 +29,7 @@ for(itt =0; itt < 10000; itt++){
 
   Serial.print("TSOPAvg: ");
   Serial.println(tsopAvg);
+
   if(qsdAvg>980){
     //No dummy
     return 0;
