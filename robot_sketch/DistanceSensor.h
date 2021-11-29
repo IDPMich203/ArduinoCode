@@ -21,14 +21,15 @@ long getDistance() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  long duration = pulseIn(echoPin, HIGH);
+  long duration = pulseIn(echoPin, HIGH, 3000);
   if(duration == 0){
     duration = 1000000;
   }
   // Calculating the distance
   float distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
   // Displays the distance on the Serial Monitor
- return distance;
+ //return distance;
+ return 10;
 }
 
 #endif
