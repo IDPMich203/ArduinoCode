@@ -1,17 +1,14 @@
-#ifndef COMMS_H
+#ifdef COMMS_H
 #define COMMS_H
-#include <WiFi.h>
 #include "DelayAsync.h"
-
-#define PORT 8090
-
-
+​
+​
 class Communications {
   public:
     WiFiClient client;
     bool Init(const char* SSID, const char* password, int timeout=10000) {
       unsigned long startTime = millis();
-      WiFi.begin(SSID, password);
+      WiFi.begin(ssid, password);
       while (WiFi.status() != WL_CONNECTED) {
         delayAsync(500);
         Serial.println("...");
@@ -19,26 +16,26 @@ class Communications {
           return false;
         }
       }
-
+​
       Serial.print("WiFi connected with IP: ");
       Serial.println(WiFi.localIP());
       
       // Cheeky tactic where I reckon the server IP is always the gateway IP
-      IPAddress gateway = WiFi.gatewayIP();
-
-      if (!client.connect(gateway, PORT)) {
+      gateway = WiFi.gatewayIP();
+​
+      if (!client.connect(gateway, port)) {
         Serial.println("Connection to host failed");
         delayAsync(1000);
         return false;
       }
-
+​
       
       Serial.println("Connected to server successful!");
       client.println("Connected");
       return true;
     }
-
-
+​
+​
     
     
     //Check if in search area
@@ -51,7 +48,7 @@ class Communications {
       
       unsigned long start_time = millis();
       while (millis() - start_time < timeout) {
-
+​
         //Call tick to update any async functions such as blink
         MainTimer.tick();
         if (client.available()) {
@@ -64,8 +61,8 @@ class Communications {
       }
       return false;
     }
-
-
+​
+​
     //You can read to a string like so:
     /*
         while(client.available()){
@@ -77,8 +74,7 @@ class Communications {
           }
         
         */
-
+​
 };
-
 
 #endif
