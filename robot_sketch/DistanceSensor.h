@@ -21,7 +21,7 @@ long getDistance() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  long duration = pulseIn(echoPin, HIGH);
+  long duration = pulseIn(echoPin, HIGH, 5000);
   if(duration == 0){
     duration = 1000000;
   }

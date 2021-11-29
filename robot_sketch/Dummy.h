@@ -10,9 +10,11 @@ int detectDummy(){
   int tsopPin = A0;
   int tsopVal = 0;
   float tsopAvg = 0;
-for(itt =0; itt < 50000; itt++){
-
-  itt = itt + 1;
+for(itt =0; itt < 10000; itt++){
+//  if(itt % 1000 == 0){
+//  yield();
+//  }
+//  itt = itt + 1;
   qsdVal = analogRead(qsdPin);
   qsdAvg = qsdAvg + qsdVal;
   tsopVal = analogRead(tsopPin);
@@ -21,7 +23,13 @@ for(itt =0; itt < 50000; itt++){
 
   qsdAvg = qsdAvg/10000;
   tsopAvg = tsopAvg/10000;
-  if(qsdVal>900){
+
+  Serial.print("QSDAvg: ");
+  Serial.println(qsdAvg);
+
+  Serial.print("TSOPAvg: ");
+  Serial.println(tsopAvg);
+  if(qsdAvg>980){
     //No dummy
     return 0;
   }
