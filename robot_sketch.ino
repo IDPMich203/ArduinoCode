@@ -4,6 +4,9 @@
 #include "header.h"
 #include "Driver.h"
 #include "DistanceSensor.h"
+#include "communications.h"
+#include <math.h>
+#include "IMU.h"
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
 //motor 1 should be on the left, motor 2 on the right
@@ -16,6 +19,7 @@ int dummies = 0;
 bool started = false;
 int value = 0;
 Driver driver;
+Communications communications;
 void setup() {
   // put your setup code here, to run once:
   pinMode(NINA_RESETN, OUTPUT);         
@@ -27,6 +31,7 @@ void setup() {
   Serial.begin(9600);
   SerialNina.begin(115200);
   AFMS.begin();
+  Init();
   
 }
 
@@ -39,23 +44,21 @@ void loop() {
   }
   
   // put your main code here, to run repeatedly:
-  SerialNina.write("InSearch");
-  delay(1000);
-  String insearch = SerialNina.readString();
+  bool insearch = communications.IsInSearchArea();
   int iteration = 0;
-  while(getDistance() > 5 || insearch=="n" || insearch==""){
+  while(getDistance() > 5 || insearch==false){
     robot.line_following(driver);
     delay(10);
     if(getDistance()<=5 && iteration%5==0){
-      SerialNina.write("InSearch");
-      delay(1000);
-      String insearch = SerialNina.readString();
+      bool insearch = communications.IsInSearchArea();
       iteration+=1;
     }
   }
   //once it's in the search area AND within 5cm of a dummy
   driver.stop();
   //once man detected and within distance to pick up
+  //turn 180 degrees
+  robot.pick_up(driver);
   int pattern = robot.detectDummy();
   SerialNina.write("robotx");
   String robotstringx = SerialNina.readString();
@@ -89,8 +92,8 @@ void loop() {
     String boxstringy = SerialNina.readString();
     boxy = boxstringy.toInt();
   }
-  if (pattern !=0){
-    robot.pick_up(driver);
+  if (pattern==1){
+    
     int x = boxx-robotx; 
     int y = boxy-roboty;
     float boxdirection = atan(y/x);
@@ -98,11 +101,13 @@ void loop() {
     String robotstringr = SerialNina.readString();
     float robotr = robotstringr.toFloat();
     if (x<0){
-     // rotate = boxdirection;
+     float rotate = boxdirection+robotr-3*M_PI/4;
     }
   }
+  //IF BOX IS WHITE
    //if x<0, angle to rotate = direction + robot rotation -3pi/4; if x>0, angle to rotate = direction + robot rotation + pi/4
 // if x=0 and y> 0, angle to rotate = direction + 3pi/4; if x=0 and y<0, angle to rotate = direction -pi/4
+//IF BOX IS RED OR BLUE: go back over the ramp, then do same as if white
 //forwards, stop, get robot coords, chec if they are equal, keep going forwards if not, stop when they are equal
 //  for (int i=0; i<2; i++){
 //  //locate next man with camera: driver.stop(); Serial.write("robot coordinates"); Serial.write("dummy coordinates"); locate robot; locate man; get path from robot to man; move along that path
