@@ -9,7 +9,8 @@
 class Robot{
   public:
     void line_following(Driver driver);
-    void line_turn(Driver driver);
+    void box(Driver driver);
+   
     //Returns 0 for no dummy, 1,2,3 order on moodle
     int detectDummy(){
       int qsdPin = A1;

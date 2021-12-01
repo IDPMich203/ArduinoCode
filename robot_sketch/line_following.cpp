@@ -28,21 +28,25 @@ void Robot::line_following(Driver driver){
   
   
 }
-void Robot::line_turn(Driver driver){
-  int step=0;  
+
+//same as line-following but instead of keeping going and crossing a white horizontal line, it stops when it gets to it, to put the robot down
+void Robot::box(Driver driver){
   bool right = digitalRead(RIGHT_SENSOR);
-  bool left  = digitalRead(LEFT_SENSOR);
-  while(not right){
-    driver.leftMotor.setSpeed(255);
-    driver.rightMotor.setSpeed(125);
-    right = digitalRead(RIGHT_SENSOR);
-  }
-  while(not(left&&right)){
-    driver.leftMotor.setSpeed(200);
-    driver.rightMotor.setSpeed(100);
-    left  = digitalRead(LEFT_SENSOR);
-    right = digitalRead(RIGHT_SENSOR);
-  }
-  driver.stop();
-  
+    bool left  = digitalRead(LEFT_SENSOR);
+    Serial.print(left);
+    Serial.println(right);
+    if(left && right){
+      driver.stop();
+    }
+    else if(right){
+      driver.leftMotor.setSpeed(255);
+      driver.rightMotor.setSpeed(125);
+      }
+    else if(left){
+       driver.leftMotor.setSpeed(125);
+      driver.rightMotor.setSpeed(255);;
+      }
+    else{
+     driver.start_move(1);
+     }
 }
