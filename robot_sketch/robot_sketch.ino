@@ -17,8 +17,8 @@
 #define BUTTON 7
 
 
-#define AMBER_PIN 11
-#define RED_PIN 12
+#define AMBER_PIN 12
+#define RED_PIN 11
 #define GREEN_PIN 13
 
 
@@ -30,7 +30,7 @@ Communications communications;
 
 bool amberstate = true;
 void blinkAmber() {
-  Serial.println("Blink");
+//  Serial.println("Blink");
   digitalWrite(AMBER_PIN, amberstate ? HIGH : LOW);
   amberstate = !amberstate;
   return true;
@@ -46,28 +46,57 @@ void setup() {
   digitalWrite(GREEN_PIN, LOW);
   Serial.begin(9600);
   Serial.println("Hello");
-  communications.begin("Walker", "bruhbruhbruh");
   driver.begin(1, 2);
+//  communications.begin("Walker", "bruhbruhbruh");
+
   setupSensor(echoPin, trigPin);
 
 
-  driver.open_gripper(true);
+//  driver.open_gripper(true);
 
-
+  BeginLineFollowing();
   InitIMU();
   //Wait for any transients to settle?
   delayAsync(500);
   MainTimer.every(500, blinkAmber);
-  calibrateIMU();
+//  calibrateIMU();
+  digitalWrite(AMBER_PIN, HIGH);
+  digitalWrite(RED_PIN, HIGH);
+  digitalWrite(GREEN_PIN, HIGH);
+  delayAsync(1000);
+  digitalWrite(AMBER_PIN, LOW);
+  digitalWrite(RED_PIN, LOW);
+  digitalWrite(GREEN_PIN, LOW);
+
+  
 }
 
 void loop() {
-
+//  turn_angle(driver,90);
+/*
+ * // Gripper testing
+driver.start();
+  while(1){
+    delayAsync(1000);
+    driver.pick_up();
+    delayAsync(1000);
+    driver.drop();
+  }
+  */
+  /*
+  //Line follower testing 
+   while(1){
+//    Serial.println(FollowLine(driver));
+    FollowLine(driver);
+    delayAsync(10);
+   }
+   */
+  /*
   //Distance sensor testing
   while(1){
     Serial.println(getDistance());
   }
-
+  */
   //Wifi testing stuff
   /*char boxes[3] = {'b', 'r', 'w'};
   int x, y;
@@ -98,36 +127,42 @@ void loop() {
   delayAsync(1000);
   return;
   while (1);
+
+  */
   while (!running) {
     running = digitalRead(BUTTON);
   }
-  */
-  
+
+  driver.start();
+
   communications.debug("Started program, following line");
-  //Follow till dummy on line
-  while (getDistance() < 5.0) {
+  driver.start_move(1.0);
+  while (getDistance() > 5.0) {
     FollowLine(driver);
+    
     delayAsync(10);
   }
-
+//  driver.stop();
+  
   communications.debug("Found dummy, preparing to pick up");
   //Pick up
   driver.stop();
   delayAsync(5000);
 
+/*
   communications.debug("Reversing");
   driver.start_move(-1.0);
   delayAsync(500);
   driver.stop();
-
+*/
   communications.debug("Turning");
   delayAsync(200);
   turn_angle(driver, 180);
   driver.open_gripper(true);
 
   communications.debug("Approaching dummy");
-  driver.start_move(1.0);
-  delayAsync(1200);
+  driver.start_move(-1.0);
+  delayAsync(1150);
   driver.stop();
   driver.pick_up();
 
@@ -136,6 +171,7 @@ void loop() {
   int dummy_no = detectDummy();
   if (dummy_no == 0) {
     communications.debug("No dummy");
+    /*
     for (int i = 0; i < 10; i++) {
 
       Serial.println("Blink");
@@ -146,6 +182,7 @@ void loop() {
       delayAsync(500);
       //  if(digitalRead(BUTTON)) return;
     }
+    */
 
   } else if (dummy_no == 1) {
     communications.debug("Dummy 1");
@@ -154,18 +191,30 @@ void loop() {
   } else if (dummy_no == 2) {
     communications.debug("Dummy 2");
     digitalWrite(RED_PIN, HIGH);
+    digitalWrite(GREEN_PIN, LOW);
   } else if (dummy_no == 3) {
     communications.debug("Dummy 3");
     digitalWrite(GREEN_PIN, HIGH);
+    digitalWrite(RED_PIN, LOW);
   }
 
+  /*
+  float last_distance = getDistance();
+  while(1){
+    turn_angle(20);
+    
+    if(last_distance - getDistance() > 7.0){
+       break;
+    }
+  }
+  */
   if (dummy_no == 1) {
     //COntinue to white square
     communications.debug("Going to white square");
     turn_angle(driver, 180);
     while (true) {
       int i = FollowLine(driver);
-
+      
       if (i == 0) {
         communications.debug("Detected lines");
         driver.stop();
@@ -180,8 +229,27 @@ void loop() {
         driver.start_move(1.0);
         delayAsync(1000);
         driver.stop();
-        break;
+        //Check for white then black then white
+        int armed_state = 0;
+        while (true) {
+          int i = FollowLine(driver);
+          if(armed_state >= 2 && i == 0){
+            driver.stop();
+            driver.start_move(1.0);
+            delayAsync(1800);
+            driver.stop();
+            driver.start_turn(1.0);
+            while(1);
+          }else if(i == 0){
+            armed_state ++;
+            
+          }else if(i == 3 && armed_state == 1){
+            armed_state++;
+          }
+          delayAsync(20);
+        }
       }
+      delayAsync(10);
     }
   } else if (dummy_no == 0) {
     //Oh god what do we do
@@ -194,34 +262,34 @@ void loop() {
       if (i == 0) {
         communications.debug("Detected lines");
         driver.stop();
+        driver.start_move(1.0);
+        delayAsync(1000);
+        driver.stop();
         if (dummy_no == 2) {
-          turn_angle(driver, 180 + 45);
+//          turn_angle(driver, 180 + 45);
+            turn_angle(driver, 90);
         } else {
-          turn_angle(driver, 180 - 45);
+//          turn_angle(driver, 180 - 45);
+          turn_angle(driver, -90);
         }
+//        driver.start_move(-1.0);
+//        delayAsync(1650);
         driver.stop();
         driver.drop();
         driver.roll();
         driver.start_move(1.0);
-        delayAsync(1000);
+        delayAsync(1650);
         driver.stop();
         break;
       }
+      delayAsync(10);
     }
   }
-  while (getDistance() < 5.0) {
-    FollowLine(driver);
-    delayAsync(10);
-  }
-  //Oh no he's on fire
-  driver.stop();
-  driver.drop();
-  driver.roll();
-
 
   running = false;
   return;
 
+/*
   bool insearch;
   while (!communications.IsInSearchArea(insearch));
   int iteration = 0;
@@ -242,11 +310,24 @@ void loop() {
   //turn 180 degrees
   driver.pick_up();
   int pattern = detectDummy();
+  */
+  /*
   int robotx, roboty;
   while (!communications.getRobotCoords(robotx, roboty));
-  int boxx;
-  int boxy;
+  int dummyx;
+  int dummyy;
+  while (!communications.getDummyCoords(dummyx, dummyy));
 
+
+  int x = dummyx - robotx;
+  int y = dummyy - roboty;
+  float dummydirection = atan(y / x);
+  float robotr;
+  while (!communications.getRobotRotation(robotr));
+  dummydirection -= 3.0 * M_PI / 4.0;
+
+  turn_angle(deg(dummydirection));
+  
   //White box
   if (pattern == 1) {
     while (!communications.getBoxCoords('w', boxx, boxy));
@@ -293,5 +374,6 @@ void loop() {
 
 
   //}
+  */
 
 }

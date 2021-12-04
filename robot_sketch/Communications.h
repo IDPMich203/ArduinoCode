@@ -167,6 +167,7 @@ class Communications {
     void debug(char* message){
       client.print("m");
       client.println(message);
+      client.flush();
     }
     //You can read to a string like so:
     /*

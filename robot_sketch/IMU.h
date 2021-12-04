@@ -19,6 +19,9 @@ float avg_z = 0;
 float x, y, z;
 
 void calibrateIMU(int num = 500) {
+  avg_x = 0;
+  avg_y = 0;
+  avg_z = 0;
   for (int i = 0; i < num; i++) {
     while (!IMU.gyroscopeAvailable()) yield();
     IMU.readGyroscope(x, y, z);
@@ -33,6 +36,11 @@ void calibrateIMU(int num = 500) {
 
 
 void turn_angle(Driver driver, float angle, unsigned long timeout = 10000) {
+  driver.stop();
+  //Wait for transients to settle
+  delayAsync(1000);
+  calibrateIMU();
+  
   float rot = 0;
   if (angle < 0) {
     driver.start_turn(-1.0);

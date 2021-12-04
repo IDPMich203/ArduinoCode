@@ -12,7 +12,7 @@ void setupSensor(uint8_t eP, uint8_t tP) {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an OUTPUT
   pinMode(echoPin, INPUT); // Sets the echoPin as an INPUT
 }
-long getDistance() {
+float getDistance() {
   // Clears the trigPin condition
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);

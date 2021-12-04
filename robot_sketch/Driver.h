@@ -12,7 +12,7 @@
 #define GRIPPER_CLOSED SERVO_MIN
 #define GRIPPER_OPEN SERVO_MAX
 
-#define ARM_UP SERVO_MIN
+#define ARM_UP SERVO_MIN + 10
 #define ARM_DOWN SERVO_MAX
 
 class Driver{
@@ -33,15 +33,20 @@ class Driver{
       leftMotor.setSpeed(leftSpeed);
       rightMotor.setSpeed(rightSpeed);
 
-      gripperServo.attach(9);
-      rearServo.attach(10);
+
+  }
+
+  void start(){
+          gripperServo.attach(9);
+//      rearServo.attach(10);
       lower_back(true);
       open_gripper(true);
   }
   void raise_back(){
+    rearServo.attach(10);;
     for (int i=ARM_UP; i<ARM_DOWN; i++) {
     rearServo.write(i);
-    delayAsync(30);
+    delayAsync(10);
  }
   }
   void open_gripper(bool fast=false){
@@ -65,14 +70,19 @@ class Driver{
   }
   }
   void lower_back(bool fast = false){
+    rearServo.attach(10);
     if(fast){
       rearServo.write(ARM_UP);
+      rearServo.detach();
+      analogWrite(10, 0);
       return;
     }
     for (int i=ARM_DOWN; i>ARM_UP; i--) {
     rearServo.write(i);
     delayAsync(30);
   }
+  rearServo.detach();
+  analogWrite(10, 0);
   }
   void setSpeed(int speed){
     leftMotor.setSpeed(speed);
