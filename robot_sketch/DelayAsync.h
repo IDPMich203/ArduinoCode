@@ -4,13 +4,15 @@
 
 Timer<10> MainTimer;
 
-void delayAsync(unsigned long duration){
-  
-  // Get snapshot of time
+void delayAsync(unsigned long duration)
+{
+
+   // Get snapshot of time
    unsigned long startTime = millis();
-   
-   while((unsigned long)(millis() - startTime) <= duration) {
-        MainTimer.tick();
+
+   while ((unsigned long)(millis() - startTime) <= duration)
+   {
+      MainTimer.tick();
    }
 }
 
