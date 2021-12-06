@@ -26,6 +26,7 @@ Driver driver;
 Communications communications;
 
 bool amberstate = true;
+//function to blink the amber light on and off
 void blinkAmber()
 {
   digitalWrite(AMBER_PIN, amberstate ? HIGH : LOW);
@@ -198,6 +199,7 @@ void loop()
         driver.start_move(1.0);
         delayAsync(1000);
         driver.stop();
+        //place the dummy in the right box
         if (dummy_no == 2)
         {
           turn_angle(driver, 90);
@@ -253,6 +255,13 @@ void loop()
     }
     delayAsync(20);
   }
+
+  //remaining code that would have been added: turn 180 degrees and line follow back over the ramp (if it needs to--i.e.if the dummy wasn't put in the white box); stop;
+  // request coordinates of the nearest dummy from the computer vision code over Wi-Fi; calculate the angle it needs to rotate by to face towards the dummy; move forwards and stop when within 5cm of the dummy;
+  //pick up and ID the dummy as before; if it's for the white box, request the coordinates of the white box, calculate the angle to rotate by to face the white box, head towards it, put dummy down
+  //if it's for the red or blue boxes: rotate back so it's facing towards the line again, head towards the line until it reaches it and both line followers detect white
+  //get coordinates of end box and rotate so it's facing end box (easiest way to make sure it's lined up with the line); follow the line until it reaches the white horizontal line;
+  //place dummy in the right box as before; THEN return home and stop in the box using the armed state code above
 
 
   running = false;
