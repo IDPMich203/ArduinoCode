@@ -1,9 +1,6 @@
 #ifndef DISTANCE_SENSOR_H
 #define DISTANCE_SENSOR_H
 
-// defines variables
-long duration;  // variable for the duration of sound wave travel
-float distance; // variable for the distance measurement
 uint8_t echoPin, trigPin;
 void setupSensor(uint8_t eP, uint8_t tP)
 {
@@ -29,9 +26,8 @@ float getDistance()
   }
   // Calculating the distance
   float distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
-                                         // Displays the distance on the Serial Monitor
   //return distance;
-  return 10;
+  return distance;
 }
 
 #endif

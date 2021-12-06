@@ -5,18 +5,19 @@
 #define LEFT_SENSOR 4
 #define RIGHT_SENSOR 5
 
+
+//Setup pins
 void BeginLineFollowing(){
   pinMode(LEFT_SENSOR, INPUT);
   pinMode(RIGHT_SENSOR, INPUT);
 }
+
+//Follow line, return integer based on how many lines are seen
 int FollowLine(Driver driver){
-  //currently assumes 2 sensors, one left and one right
-  //if both sensors detect white line--need to know what inputs the reflective object sensors are connected to and how to interface with them before I can actually write this conditional
     bool right = digitalRead(RIGHT_SENSOR);
     bool left  = digitalRead(LEFT_SENSOR);
-//    Serial.print(left);
-//    Serial.print(",");
-//    Serial.println(right);
+
+    //Both white
     if(left && right){
       driver.start_move(1.0);
       return 0;
@@ -31,6 +32,8 @@ int FollowLine(Driver driver){
       driver.rightMotor.setSpeed(255);
       return 2;
       }
+
+    //Both black
     else{
      driver.start_move(1);
      return 3;
